@@ -2,24 +2,19 @@
 
 ## Experience
 
-The procedural canvas occupies the viewport. A warm paper studio holds the scene catalog and settings. A separate time strip leaves the centre of the work unobstructed. On narrow screens the canvas leads, followed by the same controls in document flow.
+The procedural canvas occupies the viewport. A translucent panel at the right holds a miniature of the live frame, time controls, a four-column catalog of rendered thumbnails, and settings. On narrow screens the canvas leads, followed by controls in document flow.
 
 ## Tokens
 
-- Paper: `#f0ece2`
-- Ink: `#302a23`
-- Secondary ink: `#71685c`
-- Selected controls: `#795137` with `#fff8e9` text
-- Focus and selection: `#845232`
-- Headings: Georgia, with a Times New Roman fallback
-- Controls: Helvetica Neue, with an Arial fallback
-- Control radius: 2px; studio radius: 4px
-- Desktop spacing: 34px outside edge, 21–25px within panels
+- Paper: `#eaeae4`; ink: `#252722`; secondary ink: `#50554d`.
+- Selected controls: `#435346`. Keyboard focus: `#894722`.
+- Display text: self-hosted Geist Serif Regular. Small control labels: system sans-serif.
+- The 320px desktop rail reserves space for the controls. A translucent surface groups them without blurring the canvas. Increased contrast or reduced transparency makes the surface opaque.
 
 ## States
 
-The scene's selected button uses a filled brown background. Controls retain visible keyboard focus. Solar phase labels come from elevation, not clock-hour ranges. Scene descriptions and the canvas's accessible name change with the selection. Error messages explain invalid civil times, invalid locations, and unavailable graphics.
+An outline around the thumbnail identifies the selected study. Controls retain visible keyboard focus. Solar phase labels come from elevation, not clock-hour ranges. The canvas's accessible name changes with the selection. Error messages explain invalid civil times, invalid locations, and unavailable graphics.
 
 ## Motion
 
-Only the material moves: foliage, caustics, reflected light, and rain. The sun advances with the chosen UTC instant. Still air and reduced-motion preferences freeze material motion. UI transitions are limited to control colour and switch position.
+Material motion and the solar clock are independent. Still air and reduced motion freeze material motion. Scene changes and large clock seeks dissolve from the displayed frame. Immersive mode fades the controls and expands the canvas; reduced motion skips these transitions.

@@ -1,6 +1,8 @@
 # Silhouette Shader
 
-Twelve original procedural light studies for Moonshine. The sun's position at a chosen location, date, and time controls the light's direction, warmth, and intensity.
+Sixteen original procedural light studies for Moonshine. The sun's position at a chosen location, date, and time controls the light's direction, warmth, and intensity.
+
+A web shader inspired by the visual effects of [Sunstill](https://sunstill.app/), an exceptionally well-made desktop app. [Buy the original](https://sunstill.app/) to support its creator. Not affiliated with Sunstill.
 
 ## Run the studio
 
@@ -34,6 +36,10 @@ The studio starts at the current time in Hong Kong. Scrub the time slider to exp
 | `opal` | Opal | Translucent coloured panes |
 | `trellis` | Trellis | Diamond lattice shadows |
 | `washi` | Washi | A paper and timber screen |
+| `cast` | Cast | Mottled transmission through cast glass blocks |
+| `oculus` | Oculus | Palm shadows across a round aperture |
+| `clerestory` | Clerestory | Ferns behind a high strip of glass |
+| `louvre` | Louvre | A pair of amber timber shutters |
 
 ## Use the component
 
@@ -59,9 +65,23 @@ The stylesheet makes the canvas full-screen. For an embedded canvas, override `.
 
 For custom renderers, `src/shader.ts` exports the fragment body `silhouetteFragment`. Its uniforms are `u_resolution` in pixels, `u_time` in seconds, `u_scene` as the scene's zero-based catalog index, `u_elevation`, `u_azimuth`, and `u_facing` in radians, and `u_overcast` from 0 to 1.
 
-The canvas caps pixel density at 1.5 and drawing at approximately 30 frames per second. It stops drawing in hidden tabs. Reduced-motion preferences freeze the material animation. A WebGL failure or context loss produces a visible recovery message instead of silently showing a blank canvas.
+The canvas caps pixel density at 1.5 and animates on browser refresh. It stops scheduling frames in hidden tabs. Reduced-motion preferences freeze the material animation. A WebGL failure or context loss produces a visible recovery message instead of silently showing a blank canvas.
 
 ## Solar model
+
+For a non-React host, import `mountWeather` from `src/weather.ts`. This is the same renderer as the studio. Give it an opaque, CSS-sized canvas underneath the host's foreground. Bundle `weather.ts` and its local imports, including `leafProjection.ts` (Slats geometry) and `paneFlow.ts` (water on glass), and retain LICENSE. The runtime import is `@tschk/moonshine-next/shaders` at the lockfile version. No backing image, studio CSS, or scene thumbnails are required. Use `mountRoom` or `mountWeather` to supply the moving leaf-shadow and water-height textures; the fragment alone does not run those simulations.
+
+```ts
+const dispose = mountWeather(canvas, condition, {
+  scene: 'washi', instant, latitude, longitude, facing: 135, animated: false,
+});
+// After the host's fade, on navigation, or before reusing the canvas:
+dispose();
+```
+
+`condition` is `clear`, `cloud`, `fog`, `rain`, `storm`, or `snow`. A caller can instead use `mountRoom(canvas, condition, options)` and its `update(condition, options)` and `dispose()` methods to change material, solar instant or weather without recompiling. Reduced motion or `animated: false` paints on mount, updates and resize without an animation loop. Without explicit solar inputs the weather mount uses Kuala Lumpur and the current instant. The host owns location, forecast mapping, visibility, fades and the clock. No weather service is called by this package. `onError` receives context loss; mount throws when WebGL is unavailable. The React wrapper displays these errors. `bun scripts/verify-materials.mjs` renders every material with every weather variant and exercises both mount APIs.
+
+## Solar calculations
 
 `src/solar.ts` computes a low-order apparent solar ephemeris with a topocentric parallax correction. Azimuth is clockwise from true north. Elevation is the geometric solar-centre altitude without atmospheric refraction. The model is intended for 1900–2100, not navigation or surveying.
 
@@ -84,7 +104,7 @@ For the rendered check, install `agent-browser`, Chromium, and ImageMagick, star
 bun scripts/verify-browser.mjs
 ```
 
-`PREVIEW_URL` overrides the target. `EVIDENCE_DIR` overrides the output directory. The default is `.amp/in/orb-backup/browser-check`. The check uses Chromium software WebGL, verifies twelve different rendered images, checks solar values and controls, compares day, night, and overcast pixels, and checks 1280, 768, and 390-pixel layouts. Narrow Chromium layouts are not physical-device tests.
+`PREVIEW_URL` overrides the target. `EVIDENCE_DIR` overrides the output directory. The default is `.amp/in/orb-backup/browser-check`. The check uses Chromium software WebGL, verifies sixteen different rendered images, checks solar values and controls, compares day, night, and overcast pixels, and checks 1280, 768, and 390-pixel layouts. Narrow Chromium layouts are not physical-device tests.
 
 ## Hosting
 

@@ -12,11 +12,11 @@ Moonshine's Next-compatible shader entry point, React, Bun, original GLSL. No Ne
 
 ## Product purpose
 
-A personal collection of twelve interactive light studies. Location, date and civil time determine the real solar direction and the transition from day through twilight to night.
+A personal collection of sixteen interactive light studies. Location, date and civil time determine the real solar direction and the transition from day through twilight to night.
 
 ## Capabilities and constraints
 
-Scene selection, time scrubbing, follow-current-sun mode, overcast lighting, custom coordinates and IANA timezone, date selection, window orientation, and an immersive view. Solar calculations must cover both hemispheres, DST and polar conditions. Keep source imagery and third-party branding out of the project. No analytics, external assets or geolocation requests without user action.
+Scene selection, time scrubbing, follow-current-sun mode, overcast lighting, custom coordinates and IANA timezone, date selection, window orientation, and an immersive view. Solar calculations must cover both hemispheres, DST and polar conditions. Credit and recommend buying Sunstill in the studio and README without implying affiliation or copying its assets. No analytics, external assets or geolocation requests without user action.
 
 ## Brand commitments
 

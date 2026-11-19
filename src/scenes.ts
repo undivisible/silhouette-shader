@@ -11,6 +11,10 @@ export const scenes = [
   { id: "opal", name: "Opal", description: "Translucent panes tint the light in pale colours.", material: "Glass / opalescence" },
   { id: "trellis", name: "Trellis", description: "An open lattice makes a shifting field of diamonds.", material: "Stone / lattice" },
   { id: "washi", name: "Washi", description: "Light softens through a timber and paper screen.", material: "Paper / timber" },
+  { id: "cast", name: "Cast", description: "Cast glass breaks each square of light into ripples.", material: "Glass / mortar" },
+  { id: "oculus", name: "Oculus", description: "Palm fronds cross a round pool of apricot light.", material: "Glass / palm" },
+  { id: "clerestory", name: "Clerestory", description: "Fern shadows fill a high band of frosted panes.", material: "Frosted glass / fern" },
+  { id: "louvre", name: "Louvre", description: "Two banks of wooden slats cast amber bars.", material: "Timber / ochre" },
 ] as const;
 
 export type SceneId = (typeof scenes)[number]["id"];
