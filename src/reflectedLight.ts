@@ -56,7 +56,6 @@ float foilFlux(vec2 p,float t,float cloud,float travel){
   r.y-=.035*r.x;
   float footprint=exp(-dot(r*r,vec2(3.7,19.)));
   float sun=1.-smoothstep(0.,1.,cloud);
-  if(sun<=0.)return .10*footprint;
   // Parameterize the deformed sheet by its receiver hit. A localized bend
   // displaces the source coordinate by A*d*exp(-d²/2w²). Its derivative
   // gathers rays at the bend and borrows them from the adjoining shoulders.
@@ -73,6 +72,6 @@ float foilFlux(vec2 p,float t,float cloud,float travel){
     source+=g*d;
     density*=1.+g*(1.-z*z);
   }
-  return footprint*mix(.10,.24+.30*density,sun);
+  return footprint*mix(.065+.17*density,.24+.30*density,sun);
 }
 `;

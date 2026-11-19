@@ -1,26 +1,38 @@
 {
   "name": "@undivisible/silhouette-shader",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "license": "ISC",
-  "description": "Original solar-driven light studies for Moonshine",
+  "description": "Solar-driven WebGL light studies with animated materials and weather for browsers and Moonshine",
+  "homepage": "https://silhouette.undivisible.dev/",
+  "repository": { "type": "git", "url": "git+https://github.com/undivisible/silhouette-shader.git" },
+  "bugs": "https://github.com/undivisible/silhouette-shader/issues",
+  "keywords": ["webgl2", "glsl", "shaders", "solar-position", "generative-art", "weather", "moonshine"],
+  "publishConfig": { "access": "public" },
+  "files": ["lib/", "THIRD-PARTY-NOTICES"],
+  "exports": {
+    ".": { "types": "./lib/index.d.ts", "import": "./lib/index.js" },
+    "./react": { "types": "./lib/react.d.ts", "import": "./lib/react.js" }
+  },
   "scripts": {
     "build": "bun build src/main.tsx --outdir dist --target browser --production --minify && bun build.ts",
+    "build:package": "tsup",
+    "prepack": "npm run build:package",
     "dev": "bun run build && bun --watch server.ts",
     "start": "bun server.ts",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
     "check": "bun run typecheck && bun test && bun run build"
   },
-  "dependencies": {
+  "peerDependencies": { "react": ">=18" },
+  "peerDependenciesMeta": { "react": { "optional": true } },
+  "devDependencies": {
     "@tschk/moonshine": "0.4.49",
     "@tschk/moonshine-next": "0.4.49",
     "@tschk/moonshine-server": "0.4.49",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
-  },
-  "devDependencies": {
+    "react-dom": "19.2.0",
+    "tsup": "^8.5.0",
     "@types/bun": "^1.3.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

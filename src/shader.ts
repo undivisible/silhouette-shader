@@ -3,7 +3,7 @@ import { reflectedLight } from './reflectedLight';
 import { windowStudies } from './windowStudies';
 
 /** Projected light on a stationary wall, in units of wall height. */
-export const silhouetteFragment = `
+export const silhouetteFragment: string = `
 uniform float u_scene, u_elevation, u_azimuth, u_facing, u_projection, u_overcast, u_weather;
 uniform float u_authored;
 uniform sampler2D u_mask;

@@ -1,5 +1,7 @@
 node_modules/
 dist/
+lib/
+*.tgz
 .amp/portals/
 .amp/in/
 .env

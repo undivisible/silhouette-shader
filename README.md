@@ -2,7 +2,92 @@
 
 Sixteen original procedural light studies for Moonshine. The sun's position at a chosen location, date, and time controls the light's direction, warmth, and intensity.
 
+[Explore the live studio](https://silhouette.undivisible.dev/).
+
 A web shader inspired by the visual effects of [Sunstill](https://sunstill.app/), an exceptionally well-made desktop app. [Buy the original](https://sunstill.app/) to support its creator. Not affiliated with Sunstill.
+
+## Install
+
+```sh
+npm install @undivisible/silhouette-shader@0.1.0
+```
+
+The package is ESM. The root entry uses Moonshine's `@tschk/moonshine-next/shaders` renderer. You can use it in a browser app without React, a Moonshine server, or Next.js.
+
+## Mount a room in the browser
+
+Give the canvas a size in CSS. The renderer sizes its drawing buffer to match. No studio stylesheet or image assets are required.
+
+```html
+<canvas id="room" style="display: block; width: 100%; height: 24rem" aria-label="Window light"></canvas>
+```
+
+Mount only after the canvas exists in the browser. Both mount functions require WebGL 2 and throw if it is unavailable.
+
+```ts
+import { mountRoom, type RoomOptions } from '@undivisible/silhouette-shader';
+
+const canvas = document.querySelector<HTMLCanvasElement>('#room')!;
+const state: RoomOptions = {
+	scene: 'washi',
+	instant: new Date('2024-12-21T04:00:00Z'),
+	latitude: 22.3193,
+	longitude: 114.1694,
+	facing: 135,
+	onError: (message) => console.error(message),
+};
+const room = mountRoom(canvas, 'clear', state);
+
+// When the forecast changes, keep the same location, time, and error handler.
+room.update('rain', { ...state, scene: 'slats' });
+
+// When the host removes or reuses the canvas:
+room.dispose();
+```
+
+`update(condition, options)` replaces the **complete state** without recompiling the shader. It does not merge a patch. Omitted options revert to defaults. Without a location or instant, the renderer uses Kuala Lumpur and the current time. `facing` is a clockwise bearing in degrees from true north. Latitude is north-positive and longitude is east-positive.
+
+If the host only needs setup and cleanup, use `mountWeather` instead of `mountRoom`. It takes the same arguments but returns the cleanup function directly:
+
+```ts
+import { mountWeather } from '@undivisible/silhouette-shader';
+
+const dispose = mountWeather(canvas, 'fog', state);
+// On teardown:
+dispose();
+```
+
+The host supplies the weather condition. The package does not call a forecast service. Setting `animated: false` or enabling reduced motion paints on mount, update, and resize without a continuous animation loop. Hidden tabs stop scheduling frames. Use `onError` to report WebGL context loss.
+
+## Package exports
+
+- `mountRoom` and `mountWeather` render onto a canvas.
+- `scenes` is the catalog of light studies below. `conditions` lists `clear`, `cloud`, `fog`, `rain`, `storm`, and `snow`.
+- `solarPosition`, `localClock`, `zonedDateTime`, and `solarDay` are available without mounting a renderer. See [Solar calculations](#solar-calculations).
+- TypeScript hosts can import `SceneId`, `WeatherCondition`, `RoomOptions`, and `SolarDay` as types from the root.
+- `silhouetteFragment` is the GLSL fragment body for custom renderers. The fragment alone does not generate the moving leaf-shadow and water-height textures. Both mount functions supply them.
+
+## Use the optional React component
+
+In a React app, including a Moonshine React app, import the client component from `@undivisible/silhouette-shader/react`. Size its `.light-canvas` in your own CSS. The component mounts after render, updates when its props change, disposes on unmount, and displays graphics errors.
+
+```tsx
+'use client';
+
+import { SilhouetteShader } from '@undivisible/silhouette-shader/react';
+
+export function WindowLight() {
+	return <SilhouetteShader scene="bough" weather="clear"
+		instant={new Date('2024-12-21T04:00:00Z')}
+		latitude={22.3193} longitude={114.1694} facing={135} />;
+}
+```
+
+```css
+.light-canvas { display: block; width: 100%; height: 24rem; }
+```
+
+Set `paused` to freeze the material animation while still allowing a new `instant` to change the light.
 
 ## Run the studio
 
@@ -41,46 +126,6 @@ The studio starts at the current time in Hong Kong. Scrub the time slider to exp
 | `clerestory` | Clerestory | Ferns behind a high strip of glass |
 | `louvre` | Louvre | A pair of amber timber shutters |
 
-## Use the component
-
-`src/SilhouetteShader.tsx` is a client component. It uses `createFullscreenFragment` from `@tschk/moonshine-next/shaders`, compiles one original GLSL program, and updates its uniforms without recompilation. The studio's HTTP server uses Moonshine. There is no Next.js runtime dependency.
-
-Import the component and the stylesheet into a Moonshine React app. These source modules are the integration files, not a published npm package.
-
-```tsx
-import { SilhouetteShader } from "./src/SilhouetteShader";
-import "./src/style.css";
-
-<SilhouetteShader
-	scene="bough"
-	instant={new Date("2024-12-21T04:00:00Z")}
-	latitude={22.3193}
-	longitude={114.1694}
-	facing={135}
-	overcast={false}
-/>
-```
-
-The stylesheet makes the canvas full-screen. For an embedded canvas, override `.light-canvas` with the desired dimensions and positioning. `scene` is a typed scene ID. `instant` is a UTC instant, not a local-time string. Latitude is north-positive; longitude is east-positive. `facing` is a clockwise bearing from true north. Direct light disappears when the sun is behind the window. `paused` freezes only the material animation.
-
-For custom renderers, `src/shader.ts` exports the fragment body `silhouetteFragment`. Its uniforms are `u_resolution` in pixels, `u_time` in seconds, `u_scene` as the scene's zero-based catalog index, `u_elevation`, `u_azimuth`, and `u_facing` in radians, and `u_overcast` from 0 to 1.
-
-The canvas caps pixel density at 1.5 and animates on browser refresh. It stops scheduling frames in hidden tabs. Reduced-motion preferences freeze the material animation. A WebGL failure or context loss produces a visible recovery message instead of silently showing a blank canvas.
-
-## Solar model
-
-For a non-React host, import `mountWeather` from `src/weather.ts`. This is the same renderer as the studio. Give it an opaque, CSS-sized canvas underneath the host's foreground. Bundle `weather.ts` and its local imports, including `leafProjection.ts` (Slats geometry) and `paneFlow.ts` (water on glass), and retain LICENSE. The runtime import is `@tschk/moonshine-next/shaders` at the lockfile version. No backing image, studio CSS, or scene thumbnails are required. Use `mountRoom` or `mountWeather` to supply the moving leaf-shadow and water-height textures; the fragment alone does not run those simulations.
-
-```ts
-const dispose = mountWeather(canvas, condition, {
-  scene: 'washi', instant, latitude, longitude, facing: 135, animated: false,
-});
-// After the host's fade, on navigation, or before reusing the canvas:
-dispose();
-```
-
-`condition` is `clear`, `cloud`, `fog`, `rain`, `storm`, or `snow`. A caller can instead use `mountRoom(canvas, condition, options)` and its `update(condition, options)` and `dispose()` methods to change material, solar instant or weather without recompiling. Reduced motion or `animated: false` paints on mount, updates and resize without an animation loop. Without explicit solar inputs the weather mount uses Kuala Lumpur and the current instant. The host owns location, forecast mapping, visibility, fades and the clock. No weather service is called by this package. `onError` receives context loss; mount throws when WebGL is unavailable. The React wrapper displays these errors. `bun scripts/verify-materials.mjs` renders every material with every weather variant and exercises both mount APIs.
-
 ## Solar calculations
 
 `src/solar.ts` computes a low-order apparent solar ephemeris with a topocentric parallax correction. Azimuth is clockwise from true north. Elevation is the geometric solar-centre altitude without atmospheric refraction. The model is intended for 1900–2100, not navigation or surveying.
@@ -108,8 +153,8 @@ bun scripts/verify-browser.mjs
 
 ## Hosting
 
-`dist/` is a static site after the build. `bun start` serves it through Moonshine. No production host or custom domain is configured.
+`dist/` is a static site after the studio build. `bun start` serves it through Moonshine.
 
 ## License
 
-ISC. All scene code is original. Runtime dependencies use permissive licenses.
+[ISC](LICENSE). All scene code is original. Runtime dependencies use permissive licenses.
